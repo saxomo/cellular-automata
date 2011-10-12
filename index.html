@@ -1,77 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
-  <meta charset='utf-8'>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>Cellular Automata</title>
+<meta http-equiv="Content-Script-Type" content="text/javascript" /> 
+<script type="text/javascript">
+var paterns= new Array(new Array(1,1,1),
+  						new Array(1,1,0),
+							new Array(1,0,1),
+							new Array(1,0,0),
+							new Array(0,1,1),
+							new Array(0,1,0),
+							new Array(0,0,1),
+							new Array(0,0,0));
+function canvas(){ 
+	document.write('<button onclick="cellular(1)">+</button> <button onclick="cellular(-1)">-</button> ');
+	document.write( '<button onclick="cellular(2)">Rand()</button>' )  ;
+	document.write('<form name="oForm" onclick="cellular(0)">');
+	document.write('<select id="target">');
+	for(var i = 0;i < 256 ; i++)
+		document.write('<option  value='+i+' '+( i == 30 ?  'selected' : '' )+'>'+i+'</option>');
+	document.write('</select>');
+	document.write('<input type="radio" value=1 name="pxl" />1px');
+	document.write('<input type="radio" value=2 name="pxl" checked />2px');
+	document.write('<input type="radio" value=3 name="pxl" />3px');
+	document.write(' </form>');
+	
+	document.write('<canvas id="example" width="600" height="320">');
+	document.write( 'This text is displayed if your browser does not support HTML5 Canvas.');
+	document.write( '</canvas>');
+	}
+function cellular(x){
+ 	cellularAutomata(30,30,x) ;
+}
+function getCheckedValue(radioObj) {
+	if(!radioObj)
+		return "";
+	var radioLength = radioObj.length;
+	if(radioLength == undefined)
+		if(radioObj.checked)
+			return radioObj.value;
+		else
+			return "";
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			return radioObj[i].value;
+		}
+	}
+	return "";
+}
+ 
+function toEightPlaces(x){
+	while(x.length<8)x = "0"+x;
+	return x;
+}
+function cellularAutomata(y,x,nn) { 
+ 
+ 	var nPx = getCheckedValue(document.forms["oForm"].elements["pxl"]) ;	 
+    var p = 0 ,
+	white = new Array(),  
+	example = document.getElementById('example'), 
+	context = example.getContext('2d');
+	var n = 516/nPx, 
+	c = (n/2)-1,
+	f =  parseInt(document.getElementById("target").value).toString(2), 
+	cel= toEightPlaces(f) ;
+	
+	document.getElementById("target").value=nn==2?Math.floor(Math.random()*255):parseInt(document.getElementById("target").value)+nn;
+		
+	for(var i = 0 ; i < n ; i++){
+		white[i] = new Array(); 
+    	for(var j = 0 ; j < n ; j++){
+    		white[i][j]=i==c?1:0;
+    	}
+    }  
+    context.fillStyle =  "rgb(255, 255, 255)" ;
+    context.fillRect(x ,y , 630, 380);  
+	context.fillStyle =  "rgb(55 ,55 ,55)";
+    var tmp;
+    for( i = 0; i < c ; i++){ 		
+    	for( j = c-i ; j < (c + i + 1) ; j++){  
+    		white[j][i+1] =  cel.charAt(whichPatern(white[j-1][i],white[j][i],white[j+1][i]));
+    		white[j][i+1]!="1"? context.fillRect(x+nPx*j , y+nPx*i , nPx , nPx ) : context ; 	
+    	}
+    } 
+} 
+		
+function whichPatern( b, c, d  ) {
+	
+	var s=0; 
+	while( !((b==paterns[s][0])&&(c==paterns[s][1])&&(d==paterns[s][2])))s++;  
+	return s;
+}
 
-  <title>saxomo/cellular-automata @ GitHub</title>
-
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #255a29;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #daa5d6; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #daa5d6; }
-    h3 { text-align: center; color: #daa5d6; }
-    a { color: #daa5d6; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+function intToTrinaty( x) {
+	 
+    var t="";
+	 
+	while(x!=0 ){
+		t = ""+ x%3 + t;
+		x=(x - x%3)/3 ;
+	} 
+	return t;
+} 
+</script>
 </head>
-
-<body>
-  <a href="http://github.com/saxomo/cellular-automata"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/saxomo/cellular-automata/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/saxomo/cellular-automata/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/saxomo/cellular-automata">cellular-automata</a>
-      <span class="small">by <a href="http://github.com/saxomo">saxomo</a></span></h1>
-
-    <div class="description">
-      
-    </div>
-
-    <h2>Authors</h2>
-<p>Samo Novakovi (samo.novakovic@gmail.com)<br/>      </p>
-<h2>Contact</h2>
-<p> (samo.novakovic@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/saxomo/cellular-automata/zipball/master">zip</a> or
-      <a href="http://github.com/saxomo/cellular-automata/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/saxomo/cellular-automata</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/saxomo/cellular-automata">saxomo/cellular-automata</a>
-    </div>
-
-  </div>
-
-  
-</body>
+	<body>
+		<script type="text/javascript">
+			canvas();
+		</script>
+	</body>
 </html>
