@@ -1,9 +1,129 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 <title>Cellular Automata</title>
 <meta http-equiv="Content-Script-Type" content="text/javascript" /> 
-<script src="javascripts/cellularAutomata.js" type="text/javascript">
+<script type="text/javascript">
+ 
+var nType;var nTypeL;var number;
+var a=30,b=30,x=6*120,y=3*120;
+var color1="rgb(255,255,255)";
+var color2="rgb(172,177,172)";
+var color3="rgb(0,0,0)";
+
+var ww=new Array(new Array(new Array(0,0,0)),
+				 new Array(new Array(1,0,0),new Array(0,1,0),new Array(0,0,1)),
+				 new Array(new Array(1,1,0),new Array(1,0,1),new Array(0,1,1),new Array(2,0,0),new Array(0,2,0),new Array(0,0,2)),
+				 new Array(new Array(1,1,1),new Array(2,1,0),new Array(2,0,1),new Array(1,2,0),new Array(0,2,1),new Array(1,0,2),new Array(0,1,2)),
+				 new Array(new Array(2,1,1),new Array(1,2,1),new Array(1,1,2),new Array(2,2,0),new Array(2,0,2),new Array(0,2,2)),
+				 new Array(new Array(2,2,1),new Array(2,1,2),new Array(1,2,2)),
+				 new Array(new Array(2,2,2)));
+
+function canvas(){ 
+	document.write('<button onclick="cellular(-1)">-</button> <button onclick="cellular(2)">Rand()</button>');
+	document.write( '<button onclick="cellular(1)">+</button>');
+	document.write('<form name="oForm">');
+	document.write('<select id="type" onchange="cellular(2)">');
+	var cellType=new Array("2 colors and 256 different combinations","3 colors and 7.625.597.484.987 combinations","3 colors and 2187 combinations");
+	for(var i = 0; i < 3 ; i++)
+		document.write('<option  value='+i+' '+( i == 0 ?  'selected' : '' )+'>'+cellType[i]+'</option>');
+	document.write('</select>');
+	document.write('<input type="textfield" value=30 id="target" />');
+	document.write('<input type="radio" value=1 name="pxl" />1px');
+	document.write('<input type="radio" value=2 name="pxl" checked />2px');
+	document.write('<input type="radio" value=3 name="pxl" />3px');
+	document.write('</form><div id="patern"></div>');
+	document.write('<canvas id="example" width="'+x+'" height="'+y+'">');
+	document.write('This text is displayed if your browser does not support HTML5 Canvas.');
+	document.write('</canvas>');
+	cellular(0); 
+}
+
+function setTextF(q ){
+	 
+	var nSis = nType>0?3:2;	
+	var out  = '<table style="width:'+x+'px;"><tr style="height:10px;">';
+	var out2 = '';
+	 
+	for( i = 0 ; i <  nTypeL; i++ ){
+		out  += '<td class="place" rowspan=2>&nbsp;</td>';
+		out2 += '<td colspan='+(nType<2?3:1)+' ';
+		out2 += 'style="border:thin;border-style:solid;border-color:black;background-color:'+(q.substr(i,1)=="2"?color3:(q.substr(i,1)=="1"?color2:color1))+'"></td>';
+		
+		for( j = 0 ; j < (nType<2?3:1) ; j++){
+			if(nType == 2){
+				out += '<td><table style="width:90px;">'; 
+				for( k = 0 ; k < ww[i].length ; k++ ){out+='<tr>';
+					for( l = 0 ; l < 3 ; l++ ){
+					out += '<td style="border:thin;border-style:solid;border-color:black;background-color:'+(ww[i][k][l]==2?color3:(ww[i][k][l]==1?color2:color1))+'"></td>';
+					}out += '</tr>';
+				}out+='</table></td>'
+			}
+			else{
+				out+='<td style="border:thin;border-style:solid;border-color:black;background-color:'+( (nTypeL+i).toString(nSis).substr(j+1,1) =="2"?color3:((nTypeL+i).toString(nSis).substr(j+1,1) =="1"?color2:color1))+'"></td>';}
+		}			
+	}
+	out+='</tr><tr>'+out2+'</tr></table>';
+	document.getElementById("patern").innerHTML=out;	 
+}
+ 
+function getCheckedValue(radioObj) {
+	if(!radioObj)
+		return "";
+	var radioLength = radioObj.length;
+	if(radioLength == undefined)
+		if(radioObj.checked)
+			return radioObj.value;
+		else
+			return "";
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			return radioObj[i].value;
+		}
+	}
+	return "";
+}
+
+function cellular(nn) { 
+ 	var cel = "";
+ 	var nPx = getCheckedValue(document.forms["oForm"].elements["pxl"]) ;
+	nType = parseInt(document.getElementById("type").value);
+	nTypeL=nType==0?8:nType==1?27:7;
+    var p = 0 ,
+	white = new Array(),  
+	example = document.getElementById('example'), 
+	context = example.getContext('2d');
+	var n = x/nPx, 
+	c = (n/2)-1,
+	ca= nType==0?255:nType==1?Math.pow(3,27):Math.pow(3,7);
+	 number=nn==2?Math.floor(Math.random()*ca): (parseInt(document.getElementById("target").value)+  nn)%ca ;
+	document.getElementById("target").value= number;
+	cel+=nType>0 ?   number.toString(3)  :  number.toString(2); 
+	while(cel.length != nTypeL)cel="0"+cel; 
+	cel=cel .split("").reverse().join("")
+	setTextF( cel);
+	
+	for( i = 0 ; i < n ; i++){
+		white[i] = new Array(); 
+    	for(  j = 0 ; j < n ; j++){
+    		white[i][j]=i==c-1?1:0;
+    	}
+    }  
+    context.fillStyle = color1 ;
+    context.fillRect(a ,b , x, y);  
+    var tmp;  
+    for( i = 0; i < c ; i++){ 		
+    	for( j = c-i ; j < (c + i + 1) ; j++){  
+    		white[j][i+1] =  (cel.charAt( nType<2? parseInt( white[j-1][i]+white[j][i]+white[j+1][i],nType>0?3:2):(parseInt(white[j-1][i])+parseInt(white[j][i])+parseInt(white[j+1][i])) ));
+			 if(white[j][i+1]== "1" )context.fillStyle =  color3;
+			if(white[j][i+1]== "2" )context.fillStyle = color2;
+    		white[j][i+1]!= "1" ? context.fillRect(a+nPx*j , b+nPx*i , nPx , nPx ) : context ; 	
+    	}
+    } 
+} 
+
 </script>
 </head>
 	<body>
