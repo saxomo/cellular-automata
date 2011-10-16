@@ -69,8 +69,8 @@ function setTextF(q ){
 }
  
  
- white ="1"; 
-function cellular(nn) { 
+
+function cellular(nn) {  white ="1"; 
  	var cel = "";
   nPx = parseInt(document.getElementById("nPx").value);
 	nType = parseInt(document.getElementById("type").value);
@@ -88,17 +88,19 @@ function cellular(nn) {
 	while(cel.length != nTypeL)cel="0"+cel; 
 	cel=cel .split("").reverse().join("")
 	setTextF( cel);
-	var tmp,xxx,n ; 
-	  	 
-    context.fillStyle = color1 ;
+	var tmp,xxx  ;   context.fillStyle = color1 ;
     context.fillRect(a ,b , x, y); 
+	  context.fillStyle = color3; 
+	  context.fillRect(a+nPx*(c ) , b  , nPx , nPx ) ; 	 
+    context.fillStyle = color1 ;
+    
 	 	
-    for( i = 0; i < c ; i++){n=0;tmp="00"+white+"00";white=""; 
-    	for( j = c-i ; j < (c + i + 1) ; j++){ 
-			white+=xxx=cel.charAt(parseInt(tmp.substr(n++,3),nType>0?3:2)) ;	 
+    for( i = 1; i < c ; i++){ tmp="00"+white+"00";white=""; 
+    	for( j = 0 ; j < tmp.length-2 ; j++){  
+			white+=xxx=cel.charAt(nType<2?parseInt(tmp.substr(j,3),nType>0?3:2):(parseInt(tmp.substr(j,1))+parseInt(tmp.substr(j+1,1))+parseInt(tmp.substr(j+2,1)))) ;	 
 			if(xxx == "1")context.fillStyle = color3;  
 			if(xxx == "2")context.fillStyle = color2;  
-    		if(xxx != "0")context.fillRect(a+nPx*j , b+nPx*i , nPx , nPx ) ; 	
+    		if(xxx != "0")context.fillRect(a+nPx*(c-i+j) , b+nPx*i , nPx , nPx ) ; 	
     	}
     }	
 } /*document.getElementById(i+"_"+j).setAttribute("class", "b");
