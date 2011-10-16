@@ -24,8 +24,8 @@ function canvas(){
 	document.write( '<button onclick="cellular(1)">+</button>');
 	document.write('<form name="oForm">');
 	document.write('<select id="type" onchange="cellular(2)">');
-	var cellType=new Array("2 colors and 256 different combinations","3 colors and 7.625.597.484.987 combinations","3 colors and 2187 combinations");
-	for(var i = 0; i < 3 ; i++)
+	var cellType=new Array("2 colors and 256 different combinations","3 colors and 7.625.597.484.987 combinations","3 colors and 2187 combinations","2 colors and 4294967296 different combinations");
+	for(var i = 0; i < 4 ; i++)
 		document.write('<option  value='+i+' '+( i == 0?'selected':'')+'>'+cellType[i]+'</option>');
 	document.write('</select>');
 	document.write('<input type="textfield" value=30 id="target" />');
@@ -42,26 +42,26 @@ function canvas(){
 
 function setTextF(q ){
 	 
-	var nSis = nType>0?3:2;	
+	var nSis = nType>0&&nType<3?3:2;	
 	var out  = '<table style="width:'+x+'px;"><tr style="height:10px;">';
 	var out2 = '';
 	 
 	for( i = 0 ; i <  nTypeL; i++ ){
 		out  += '<td class="place" rowspan=2>&nbsp;</td>';
-		out2 += '<td colspan='+(nType<2?3:1)+' ';
-		out2 += 'style="border:thin;border-style:solid;border-color:black;background-color:'+(q.substr(i,1)=="2"?color3:(q.substr(i,1)=="1"?color2:color1))+'"></td>';
+		out2 += '<td colspan='+(nType<2?3:(nType==3?5:1))+' ';
+		out2 += 'style="border:thin;border-style:solid;border-color:black;background-color:'+(q.substr(i,1)=="2"?color2:(q.substr(i,1)=="1"?color3:color1))+'"></td>';
 		
-		for( j = 0 ; j < (nType<2?3:1) ; j++){
+		for( j = 0 ; j < (nType<2?3:(nType==3?5:1)) ; j++){
 			if(nType == 2){
 				out += '<td><table style="width:90px;">'; 
 				for( k = 0 ; k < ww[i].length ; k++ ){out+='<tr>';
-					for( l = 0 ; l < 3 ; l++ ){
+					for( l = 0 ; l <  3 ; l++ ){
 					out += '<td style="border:thin;border-style:solid;border-color:black;background-color:'+(ww[i][k][l]==2?color3:(ww[i][k][l]==1?color2:color1))+'"></td>';
 					}out += '</tr>';
 				}out+='</table></td>'
 			}
 			else{
-				out+='<td style="border:thin;border-style:solid;border-color:black;background-color:'+( (nTypeL+i).toString(nSis).substr(j+1,1) =="2"?color3:((nTypeL+i).toString(nSis).substr(j+1,1) =="1"?color2:color1))+'"></td>';}
+				out+='<td style="border:thin;border-style:solid;border-color:black;background-color:'+( (nTypeL+i).toString(nSis).substr(j+1,1) =="2"?color2:((nTypeL+i).toString(nSis).substr(j+1,1) =="1"?color3:color1))+'"></td>';}
 		}			
 	}
 	out+='</tr><tr>'+out2+'</tr></table>';
@@ -74,30 +74,30 @@ function cellular(nn) {  white ="1";
  	var cel = "";
   nPx = parseInt(document.getElementById("nPx").value);
 	nType = parseInt(document.getElementById("type").value);
-	nTypeL=nType==0?8:nType==1?27:7;
+	nTypeL=nType==0||nType==3?(nType==3?32:8):nType==1?27:7;
     var p = 0 ,
 	   
 	example = document.getElementById('example'), 
 	context = example.getContext('2d');
 	var n = x/nPx, 
 	c = (n/2)-1,
-	ca= nType==0?255:nType==1?Math.pow(3,27):Math.pow(3,7);
+	ca= nType==0||nType==3?Math.pow(2,nType==3 ?32:8):nType==1?Math.pow(3,27):Math.pow(3,7);
 	 number=nn==2?Math.floor(Math.random()*ca): (parseInt(document.getElementById("target").value)+  nn)%ca ;
 	document.getElementById("target").value= number;
-	cel+=nType>0 ?   number.toString(3)  :  number.toString(2); 
+	cel+=nType>0&&nType<3 ?   number.toString(3)  :  number.toString(2); 
 	while(cel.length != nTypeL)cel="0"+cel; 
 	cel=cel .split("").reverse().join("")
-	setTextF( cel);
+	 setTextF( cel);
 	var tmp,xxx  ;   context.fillStyle = color1 ;
     context.fillRect(a ,b , x, y); 
 	  context.fillStyle = color3; 
 	  context.fillRect(a+nPx*(c ) , b  , nPx , nPx ) ; 	 
     context.fillStyle = color1 ;
-    
+    var tail=nType==3?"0000":"00";
 	 	
-    for( i = 1; i < c ; i++){ tmp="00"+white+"00";white=""; 
-    	for( j = 0 ; j < tmp.length-2 ; j++){  
-			white+=xxx=cel.charAt(nType<2?parseInt(tmp.substr(j,3),nType>0?3:2):(parseInt(tmp.substr(j,1))+parseInt(tmp.substr(j+1,1))+parseInt(tmp.substr(j+2,1)))) ;	 
+    for( i = 1; i < c ; i++){ tmp=tail+white+tail;white=""; 
+    	for( j = 0 ; j < tmp.length-(nType==3?6:2) ; j++){  
+			white+=xxx=cel.charAt(nType<2||nType==3?parseInt(tmp.substr(j,nType==3?5:3),nType>0&&nType<3?3:2):(parseInt(tmp.substr(j,1))+parseInt(tmp.substr(j+1,1))+parseInt(tmp.substr(j+2,1)))) ;	 
 			if(xxx == "1")context.fillStyle = color3;  
 			if(xxx == "2")context.fillStyle = color2;  
     		if(xxx != "0")context.fillRect(a+nPx*(c-i+j) , b+nPx*i , nPx , nPx ) ; 	
