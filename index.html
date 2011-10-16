@@ -6,7 +6,7 @@
 <script type="text/javascript">
  
 var nType;var nTypeL;var number;
-var a=30,b=30,x=6*120,y=3*120;
+var a=30,b=30,x=6*120,y=3*120;var nPx;
 var color1="rgb(255,255,255)";
 var color2="rgb(172,177,172)";
 var color3="rgb(0,0,0)";
@@ -83,14 +83,14 @@ function getCheckedValue(radioObj) {
 	}
 	return "";
 }
-
+ white ="1"; 
 function cellular(nn) { 
  	var cel = "";
- 	var nPx = getCheckedValue(document.forms["oForm"].elements["pxl"]) ;
+  nPx = getCheckedValue(document.forms["oForm"].elements["pxl"]) ;
 	nType = parseInt(document.getElementById("type").value);
 	nTypeL=nType==0?8:nType==1?27:7;
     var p = 0 ,
-	white = new Array(),  
+	   
 	example = document.getElementById('example'), 
 	context = example.getContext('2d');
 	var n = x/nPx, 
@@ -102,25 +102,22 @@ function cellular(nn) {
 	while(cel.length != nTypeL)cel="0"+cel; 
 	cel=cel .split("").reverse().join("")
 	setTextF( cel);
-	
-	for( i = 0 ; i < n ; i++){
-		white[i] = new Array(); 
-    	for(  j = 0 ; j < n ; j++){
-    		white[i][j]=i==c-1?1:0;
-    	}
-    }  
+	var tmp,xxx,n ; 
+	  	 
     context.fillStyle = color1 ;
-    context.fillRect(a ,b , x, y);  
-    var tmp;  
-    for( i = 0; i < c ; i++){ 		
-    	for( j = c-i ; j < (c + i + 1) ; j++){  
-    		white[j][i+1] =  (cel.charAt( nType<2? parseInt( white[j-1][i]+white[j][i]+white[j+1][i],nType>0?3:2):(parseInt(white[j-1][i])+parseInt(white[j][i])+parseInt(white[j+1][i])) ));
-			 if(white[j][i+1]== "1" )context.fillStyle =  color3;
-			if(white[j][i+1]== "2" )context.fillStyle = color2;
-    		white[j][i+1]!= "1" ? context.fillRect(a+nPx*j , b+nPx*i , nPx , nPx ) : context ; 	
+    context.fillRect(a ,b , x, y); 
+	 	
+    for( i = 0; i < c ; i++){n=0;tmp="00"+white+"00";white=""; 
+    	for( j = c-i ; j < (c + i + 1) ; j++){ 
+			white+=xxx=cel.charAt(parseInt(tmp.substr(n++,3),nType>0?3:2)) ;	 
+			if(xxx == "1")context.fillStyle = color3;  
+			if(xxx == "2")context.fillStyle = color2;  
+    		if(xxx != "0")context.fillRect(a+nPx*j , b+nPx*i , nPx , nPx ) ; 	
     	}
-    } 
-} 
+    }	
+} /*document.getElementById(i+"_"+j).setAttribute("class", "b");
+	document.getElementById(i+"_"+j).setAttribute("class", "g");
+	document.getElementById(i+"_"+j).setAttribute("class", "w");*/
 
 </script>
 </head>
