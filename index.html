@@ -26,12 +26,13 @@ function canvas(){
 	document.write('<select id="type" onchange="cellular(2)">');
 	var cellType=new Array("2 colors and 256 different combinations","3 colors and 7.625.597.484.987 combinations","3 colors and 2187 combinations");
 	for(var i = 0; i < 3 ; i++)
-		document.write('<option  value='+i+' '+( i == 0 ?  'selected' : '' )+'>'+cellType[i]+'</option>');
+		document.write('<option  value='+i+' '+( i == 0?'selected':'')+'>'+cellType[i]+'</option>');
 	document.write('</select>');
 	document.write('<input type="textfield" value=30 id="target" />');
-	document.write('<input type="radio" value=1 name="pxl" />1px');
-	document.write('<input type="radio" value=2 name="pxl" checked />2px');
-	document.write('<input type="radio" value=3 name="pxl" />3px');
+	document.write('<select id="nPx" name="pxl" onchange="cellular(2)">');
+	for(var i = 1; i < 51 ; i++)
+		document.write('<option   value='+i+' '+( i == 2?'selected':'')+' />'+i+'px');
+	document.write('</select>'); 
 	document.write('</form><div id="patern"></div>');
 	document.write('<canvas id="example" width="'+x+'" height="'+y+'">');
 	document.write('This text is displayed if your browser does not support HTML5 Canvas.');
@@ -67,26 +68,11 @@ function setTextF(q ){
 	document.getElementById("patern").innerHTML=out;	 
 }
  
-function getCheckedValue(radioObj) {
-	if(!radioObj)
-		return "";
-	var radioLength = radioObj.length;
-	if(radioLength == undefined)
-		if(radioObj.checked)
-			return radioObj.value;
-		else
-			return "";
-	for(var i = 0; i < radioLength; i++) {
-		if(radioObj[i].checked) {
-			return radioObj[i].value;
-		}
-	}
-	return "";
-}
+ 
  white ="1"; 
 function cellular(nn) { 
  	var cel = "";
-  nPx = getCheckedValue(document.forms["oForm"].elements["pxl"]) ;
+  nPx = parseInt(document.getElementById("nPx").value);
 	nType = parseInt(document.getElementById("type").value);
 	nTypeL=nType==0?8:nType==1?27:7;
     var p = 0 ,
